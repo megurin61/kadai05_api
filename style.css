@@ -1,0 +1,100 @@
+/* 背景と全体の設定 */
+body {
+    background-color: #ffe6f2; /* 淡いピンク */
+    font-family: 'Arial', sans-serif; /* シンプルで読みやすいフォント */
+    color: #333; /* テキストの色 */
+    margin: 0;
+    padding: 0;
+    text-align: center; /* 全体を中央揃え */
+}
+
+/* ヘッダーの設定 */
+header {
+    background-color: #ffb6c1; /* ピンクの濃い目 */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 2em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 影をつけて立体感を出す */
+}
+
+/* メインコンテンツの設定 */
+main {
+    padding: 20px;
+    background-color: white;
+    max-width: 800px;
+    margin: 30px auto; /* 自動マージンで中央寄せ */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left; /* メインコンテンツ内のテキストは左揃え */
+}
+
+/* タイトルやセクションの見出し */
+h1, h2, h3 {
+    color: #ff69b4; /* 明るいピンク */
+    /* font-family: 'Georgia', serif; エレガントなフォント */
+    text-align: center; /* 見出しを中央揃え */
+}
+
+/* 段落の設定 */
+p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* ボタンの設定 */
+button {
+    background-color: #ff69b4; /* 明るいピンク */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+    margin: 10px 0;
+}
+
+button:hover {
+    background-color: #ff1493; /* ホバー時に濃いピンク */
+}
+
+/* リンクの設定 */
+a {
+    color: #ff69b4; /* ピンク色のリンク */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; /* ホバー時に下線をつける */
+}
+
+/* フッターの設定 */
+footer {
+    background-color: #ffb6c1; /* ヘッダーと同じ色 */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+/* カードの設定 */
+.card {
+    background-color: #ffe6f2;
+    border: 1px solid #ffb6c1;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px auto; /* カードも中央揃え */
+    max-width: 600px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 画像の設定 */
+img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻訳機能付きチャットアプリ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .remove:hover {
+            background: #7fffd4;
+        }
+    </style>
+    <!-- jQueryの読み込み -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <h1 id="title">チャットアプリ</h1>
+    <!-- 言語切替ボタン -->
+    <button id="btn-ja">日本語</button>
+    <button id="btn-en">English</button>
+
+    <!-- コンテンツ表示画面 -->
+    <div>
+        <div>
+            <input type="text" id="uname" placeholder="名前を入力してください">
+        </div>
+        <div>
+            <textarea id="text" placeholder="文章を入力してください"></textarea>
+        </div>
+        <button id="send">送信</button>
+        <div id="output"></div>
+    </div>
+
+    <script type="module">
+        // Firebaseの設定と初期化
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getDatabase, ref, push, set, remove, onChildAdded, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "enter my own key",
+  authDomain: "chat-3975e.firebaseapp.com",
+  databaseURL: "https://chat-3975e-default-rtdb.firebaseio.com",
+  projectId: "chat-3975e",
+  storageBucket: "chat-3975e.appspot.com",
+  messagingSenderId: "51955708754",
+  appId: "1:51955708754:web:9d1a75d6428ddf74ba408b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, "chat");
+
+        // DeepL API URL and Key
+        const deepLApiUrl = "https://api-free.deepl.com/v2/translate";
+        const deepLApiKey = "enter my own key";  // Replace with your DeepL API Key
+
+        // Function to translate text
+        function translateText(text, targetLang, callback) {
+            $.ajax({
+                url: deepLApiUrl,
+                type: "POST",
+                data: {
+                    auth_key: deepLApiKey,
+                    text: text,
+                    target_lang: targetLang
+                },
+                success: function(response) {
+                    callback(response.translations[0].text);
+                },
+                error: function() {
+                    alert("Translation failed.");
+                    callback(text);  // Fallback to original text if translation fails
+                }
+            });
+        }
+
+        // メッセージ送信時
+        $("#send").on("click", function () {
+            const uname = $("#uname").val();
+            const text = $("#text").val();
+
+            // Detect language and set target language for translation
+            let targetLang = "EN";  // Default target language is English
+            if (/[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF]/.test(text)) {
+                targetLang = "EN";  // Translate from Japanese to English
+            } else {
+                targetLang = "JA";  // Translate from English to Japanese
+            }
+
+            // Translate text before saving to Firebase
+            translateText(text, targetLang, function(translatedText) {
+                const msg = {
+                    uname: uname,
+                    original: text,
+                    translated: translatedText
+                };
+                const newPostRef = push(dbRef);
+                set(newPostRef, msg);
+
+                // Clear the input field
+                $("#text").val('');
+            });
+        });
+
+        // メッセージが追加されたとき
+        onChildAdded(dbRef, function (data) {
+            const msg = data.val();
+            const key = data.key;
+            let h = `<p id="${key}"><strong>${msg.uname}</strong><br>`;
+            h += `<span>Original: ${msg.original}</span><br>`;
+            h += `<span>Translated: ${msg.translated}</span>`;
+            h += `<span class="remove" data-key="${key}"> 🚮</span></p>`;
+            $("#output").prepend(h);
+        });
+
+        // メッセージ削除時
+        $("#output").on("click", ".remove", function () {
+            const key = $(this).attr("data-key");
+            const removeItem = ref(db, "chat/" + key);
+            remove(removeItem);
+        });
+
+        // メッセージが削除されたとき
+        onChildRemoved(dbRef, function (data) {
+            $("#" + data.key).remove();
+        });
+
+        // 言語を切り替える関数
+        const translations = {
+            en: {
+                title: "Chat App",
+                namePlaceholder: "Enter your name",
+                textPlaceholder: "Enter your message",
+                sendButton: "Send"
+            },
+            ja: {
+                title: "チャットアプリ",
+                namePlaceholder: "名前を入力してください",
+                textPlaceholder: "文章を入力してください",
+                sendButton: "送信"
+            }
+        };
+
+        function translateTo(lang) {
+            $("#title").text(translations[lang].title);
+            $("#uname").attr("placeholder", translations[lang].namePlaceholder);
+            $("#text").attr("placeholder", translations[lang].textPlaceholder);
+            $("#send").text(translations[lang].sendButton);
+        }
+
+        // 日本語ボタンクリックイベント
+        $("#btn-ja").on("click", function() {
+            translateTo("ja");
+        });
+
+        // 英語ボタンクリックイベント
+        $("#btn-en").on("click", function() {
+            translateTo("en");
+        });
+    </script>
+</body>
+</html>
